@@ -44,6 +44,9 @@ func EncodeDurationToString(next EncodeHookFunc) EncodeHookFunc {
 		case time.Duration:
 			return v.String(), nil
 		case *time.Duration:
+			if v == nil {
+				return "", nil
+			}
 			return v.String(), nil
 		}
 

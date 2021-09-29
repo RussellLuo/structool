@@ -30,7 +30,7 @@ $ go get -u github.com/RussellLuo/structool
 
     Both `mapstructure` and `structs` support hooks in the form of a single function, and this forces us to couple various conversions together.
    
-    Chainable hooks (much like HTTP middlewares), on the other hand, promote separation of concerns, which makes individual hook reusable and composable.
+    Chainable hooks (much like HTTP middlewares), on the other hand, promote separation of concerns, which makes individual hooks reusable and composable.
 
 
 ## Documentation
