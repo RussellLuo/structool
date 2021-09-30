@@ -13,11 +13,10 @@ var (
 func DecodeStringToError(next DecodeHookFunc) DecodeHookFunc {
 	return func(from, to reflect.Value) (interface{}, error) {
 		if from.Kind() != reflect.String {
-			return from.Interface(), nil
+			return next(from, to)
 		}
 
 		value := from.Interface().(string)
-
 		if to.Type().Implements(errorInterface) {
 			return errors.New(value), nil
 		}
@@ -31,7 +30,7 @@ func DecodeStringToTime(layout string) func(DecodeHookFunc) DecodeHookFunc {
 	return func(next DecodeHookFunc) DecodeHookFunc {
 		return func(from, to reflect.Value) (interface{}, error) {
 			if from.Kind() != reflect.String {
-				return from.Interface(), nil
+				return next(from, to)
 			}
 
 			value := from.Interface().(string)
@@ -55,7 +54,7 @@ func DecodeStringToTime(layout string) func(DecodeHookFunc) DecodeHookFunc {
 func DecodeStringToDuration(next DecodeHookFunc) DecodeHookFunc {
 	return func(from, to reflect.Value) (interface{}, error) {
 		if from.Kind() != reflect.String {
-			return from.Interface(), nil
+			return next(from, to)
 		}
 
 		value := from.Interface().(string)
@@ -69,7 +68,6 @@ func DecodeStringToDuration(next DecodeHookFunc) DecodeHookFunc {
 				return nil, err
 			}
 			return &d, nil
-
 		}
 
 		return next(from, to)
