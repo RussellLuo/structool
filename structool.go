@@ -36,9 +36,10 @@ func (c *Codec) TagName(name string) *Codec {
 func (c *Codec) DecodeHook(hooks ...func(DecodeHookFunc) DecodeHookFunc) *Codec {
 	c.decodeHooks = append(c.decodeHooks, hooks...)
 
-	// Chain the decoding hooks.
+	// Build the final hook function by applying the decoding hooks in the
+	// order they are passed.
 	if len(c.decodeHooks) > 0 {
-		f := c.decodeHooks[len(c.decodeHooks)-1](c.decodeHookFunc)
+		f := c.decodeHooks[len(c.decodeHooks)-1](nilDecodeHookFunc)
 		for i := len(c.decodeHooks) - 2; i >= 0; i-- {
 			f = c.decodeHooks[i](f)
 		}
@@ -51,9 +52,10 @@ func (c *Codec) DecodeHook(hooks ...func(DecodeHookFunc) DecodeHookFunc) *Codec 
 func (c *Codec) EncodeHook(hooks ...func(EncodeHookFunc) EncodeHookFunc) *Codec {
 	c.encodeHooks = append(c.encodeHooks, hooks...)
 
-	// Chain the encoding hooks.
+	// Build the final hook function by applying the encoding hooks in the
+	// order they are passed.
 	if len(c.encodeHooks) > 0 {
-		f := c.encodeHooks[len(c.encodeHooks)-1](c.encodeHookFunc)
+		f := c.encodeHooks[len(c.encodeHooks)-1](nilEncodeHookFunc)
 		for i := len(c.encodeHooks) - 2; i >= 0; i-- {
 			f = c.encodeHooks[i](f)
 		}

@@ -28,9 +28,9 @@ $ go get -u github.com/RussellLuo/structool
 
 3. Why chainable hooks may be useful
 
-    Both `mapstructure` and `structs` support hooks in the form of a single function, and this forces us to couple various conversions together.
+    Both `mapstructure` and `structs` support hooks in the form of a single function. While this keeps the libraries themselves simple, it forces us to couple various conversions together.
    
-    Chainable hooks (much like HTTP middlewares), on the other hand, promote separation of concerns, which makes individual hooks reusable and composable.
+    Chainable hooks (like HTTP middlewares), on the other hand, promote separation of concerns, and thus make individual hooks reusable and composable.
 
 
 ## Documentation
