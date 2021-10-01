@@ -2,6 +2,7 @@ package structool_test
 
 import (
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/RussellLuo/structool"
@@ -15,6 +16,7 @@ func Example_decode() {
 		"error":    "oops",
 		"time":     "2021-09-29T00:00:00Z",
 		"duration": "2s",
+		"ip":       "192.168.0.1",
 	}
 	out := struct {
 		String   string        `structool:"string"`
@@ -23,12 +25,14 @@ func Example_decode() {
 		Error    error         `structool:"error"`
 		Time     time.Time     `structool:"time"`
 		Duration time.Duration `structool:"duration"`
+		IP       net.IP        `structool:"ip"`
 	}{}
 
 	codec := structool.New().DecodeHook(
 		structool.DecodeStringToError,
 		structool.DecodeStringToTime(time.RFC3339),
 		structool.DecodeStringToDuration,
+		structool.DecodeStringToIP,
 	)
 	if err := codec.Decode(in, &out); err != nil {
 		panic(err)
@@ -37,7 +41,7 @@ func Example_decode() {
 	fmt.Printf("%+v\n", out)
 
 	// Output:
-	// {String:s Bool:true Int:1 Error:oops Time:2021-09-29 00:00:00 +0000 UTC Duration:2s}
+	// {String:s Bool:true Int:1 Error:oops Time:2021-09-29 00:00:00 +0000 UTC Duration:2s IP:192.168.0.1}
 }
 
 func Example_encode() {
@@ -48,6 +52,7 @@ func Example_encode() {
 		Error    error         `structool:"error"`
 		Time     time.Time     `structool:"time"`
 		Duration time.Duration `structool:"duration"`
+		IP       net.IP        `structool:"ip"`
 	}{
 		String:   "s",
 		Bool:     true,
@@ -55,12 +60,14 @@ func Example_encode() {
 		Error:    fmt.Errorf("oops"),
 		Time:     time.Date(2021, 9, 29, 0, 0, 0, 0, time.UTC),
 		Duration: 2 * time.Second,
+		IP:       net.IPv4(192, 168, 0, 1),
 	}
 
 	codec := structool.New().EncodeHook(
 		structool.EncodeErrorToString,
 		structool.EncodeTimeToString(time.RFC3339),
 		structool.EncodeDurationToString,
+		structool.EncodeIPToString,
 	)
 	out, err := codec.Encode(in)
 	if err != nil {
@@ -70,5 +77,5 @@ func Example_encode() {
 	fmt.Printf("%#v\n", out)
 
 	// Output:
-	// map[string]interface {}{"bool":true, "duration":"2s", "error":"oops", "int":1, "string":"s", "time":"2021-09-29T00:00:00Z"}
+	// map[string]interface {}{"bool":true, "duration":"2s", "error":"oops", "int":1, "ip":"192.168.0.1", "string":"s", "time":"2021-09-29T00:00:00Z"}
 }

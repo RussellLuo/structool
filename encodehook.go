@@ -1,19 +1,19 @@
 package structool
 
 import (
+	"net"
 	"reflect"
 	"time"
 )
 
 func EncodeErrorToString(next EncodeHookFunc) EncodeHookFunc {
 	return func(value reflect.Value) (interface{}, error) {
-		in := value.Interface()
-
 		if value.Type().Implements(errorInterface) {
-			if in == nil {
+			v := value.Interface()
+			if v == nil {
 				return "", nil
 			}
-			return in.(error).Error(), nil
+			return v.(error).Error(), nil
 		}
 
 		return next(value)
@@ -48,6 +48,29 @@ func EncodeDurationToString(next EncodeHookFunc) EncodeHookFunc {
 				return "", nil
 			}
 			return v.String(), nil
+		}
+
+		return next(value)
+	}
+}
+
+func EncodeIPToString(next EncodeHookFunc) EncodeHookFunc {
+	nilToEmpty := func(s string) string {
+		if s == "<nil>" {
+			return ""
+		}
+		return s
+	}
+
+	return func(value reflect.Value) (interface{}, error) {
+		switch v := value.Interface().(type) {
+		case net.IP:
+			return nilToEmpty(v.String()), nil
+		case *net.IP:
+			if v == nil {
+				return "", nil
+			}
+			return nilToEmpty(v.String()), nil
 		}
 
 		return next(value)

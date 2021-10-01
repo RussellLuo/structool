@@ -2,6 +2,7 @@ package structool
 
 import (
 	"errors"
+	"net"
 	"reflect"
 	"time"
 )
@@ -17,6 +18,7 @@ func DecodeStringToError(next DecodeHookFunc) DecodeHookFunc {
 		}
 
 		value := from.Interface().(string)
+
 		if to.Type().Implements(errorInterface) {
 			return errors.New(value), nil
 		}
@@ -68,6 +70,26 @@ func DecodeStringToDuration(next DecodeHookFunc) DecodeHookFunc {
 				return nil, err
 			}
 			return &d, nil
+		}
+
+		return next(from, to)
+	}
+}
+
+func DecodeStringToIP(next DecodeHookFunc) DecodeHookFunc {
+	return func(from, to reflect.Value) (interface{}, error) {
+		if from.Kind() != reflect.String {
+			return next(from, to)
+		}
+
+		value := from.Interface().(string)
+
+		switch to.Interface().(type) {
+		case net.IP:
+			return net.ParseIP(value), nil
+		case *net.IP:
+			ip := net.ParseIP(value)
+			return &ip, nil
 		}
 
 		return next(from, to)
