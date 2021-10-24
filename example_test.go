@@ -79,3 +79,33 @@ func Example_encode() {
 	// Output:
 	// map[string]interface {}{"bool":true, "duration":"2s", "error":"oops", "int":1, "ip":"192.168.0.1", "string":"s", "time":"2021-09-29T00:00:00Z"}
 }
+
+func Example_decodeField() {
+	in := "2s"
+	var out time.Duration
+
+	codec := structool.New().DecodeHook(structool.DecodeStringToDuration)
+	if err := codec.Decode(in, &out); err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%#v\n", out)
+
+	// Output:
+	// 2000000000
+}
+
+func Example_encodeField() {
+	in := 2 * time.Second
+
+	codec := structool.New().EncodeHook(structool.EncodeDurationToString)
+	out, err := codec.Encode(in)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%#v\n", out)
+
+	// Output:
+	// "2s"
+}

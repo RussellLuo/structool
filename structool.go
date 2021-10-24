@@ -65,7 +65,7 @@ func (c *Codec) EncodeHook(hooks ...func(EncodeHookFunc) EncodeHookFunc) *Codec 
 	return c
 }
 
-func (c *Codec) Decode(in map[string]interface{}, out interface{}) (err error) {
+func (c *Codec) Decode(in interface{}, out interface{}) (err error) {
 	config := &mapstructure.DecoderConfig{
 		DecodeHook: c.decodeHookFunc,
 		Squash:     true, // Always squash embedded structs.
@@ -81,12 +81,38 @@ func (c *Codec) Decode(in map[string]interface{}, out interface{}) (err error) {
 	return decoder.Decode(in)
 }
 
-func (c *Codec) Encode(in interface{}) (out map[string]interface{}, err error) {
+func (c *Codec) Encode(in interface{}) (out interface{}, err error) {
+	isStruct := isStruct(in)
+
+	if !isStruct {
+		// Wrap `in` in a struct.
+		in = struct{ In interface{} }{In: in}
+	}
+
 	s := structs.New(in)
 	s.TagName = c.tagName
 	s.EncodeHook = structs.EncodeHookFunc(c.encodeHookFunc)
 
-	return s.Map(), nil
+	m := s.Map()
+
+	if !isStruct {
+		for _, v := range m {
+			// m has one and only one pair of k/v.
+			return v, nil
+		}
+	}
+
+	return m, nil
+}
+
+func isStruct(in interface{}) bool {
+	v := reflect.ValueOf(in)
+
+	for v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	return v.Kind() == reflect.Struct
 }
 
 func nilDecodeHookFunc(from, to reflect.Value) (interface{}, error) {
