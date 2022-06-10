@@ -20,6 +20,9 @@ func DecodeStringToError(next DecodeHookFunc) DecodeHookFunc {
 		value := from.Interface().(string)
 
 		if to.Type().Implements(errorInterface) {
+			if value == "" {
+				return nil, nil
+			}
 			return errors.New(value), nil
 		}
 
