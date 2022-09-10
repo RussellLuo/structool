@@ -12,6 +12,7 @@ func Example_decode() {
 	in := map[string]interface{}{
 		"string":   "s",
 		"bool":     true,
+		"int_str":  "10",
 		"int":      1,
 		"error":    "oops",
 		"time":     "2021-09-29T00:00:00Z",
@@ -21,6 +22,7 @@ func Example_decode() {
 	out := struct {
 		String   string        `structool:"string"`
 		Bool     bool          `structool:"bool"`
+		IntStr   int           `structool:"int_str"`
 		Int      int           `structool:"int"`
 		Error    error         `structool:"error"`
 		Time     time.Time     `structool:"time"`
@@ -33,6 +35,7 @@ func Example_decode() {
 		structool.DecodeStringToTime(time.RFC3339),
 		structool.DecodeStringToDuration,
 		structool.DecodeStringToIP,
+		structool.DecodeStringToNumber,
 	)
 	if err := codec.Decode(in, &out); err != nil {
 		panic(err)
@@ -41,7 +44,7 @@ func Example_decode() {
 	fmt.Printf("%+v\n", out)
 
 	// Output:
-	// {String:s Bool:true Int:1 Error:oops Time:2021-09-29 00:00:00 +0000 UTC Duration:2s IP:192.168.0.1}
+	// {String:s Bool:true IntStr:10 Int:1 Error:oops Time:2021-09-29 00:00:00 +0000 UTC Duration:2s IP:192.168.0.1}
 }
 
 func Example_encode() {
