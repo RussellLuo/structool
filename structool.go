@@ -3,8 +3,8 @@ package structool
 import (
 	"reflect"
 
+	"github.com/RussellLuo/mapstructure"
 	"github.com/RussellLuo/structs"
-	"github.com/mitchellh/mapstructure"
 )
 
 type DecodeHookFunc mapstructure.DecodeHookFuncValue
